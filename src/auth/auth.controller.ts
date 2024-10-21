@@ -45,8 +45,11 @@ export class AuthController {
       req.user.email,
       req.user.role,
     );
+    // res.redirect(
+    //   `http://localhost:3000/api/auth/google/callback?id=${response.id}&email=${response.email}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`,
+    // );
     res.redirect(
-      `http://localhost:3000/api/auth/google/callback?id=${response.id}&email=${response.email}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`,
+      `${process.env.CLIENT_URL}/api/auth/google/callback?id=${response.id}&email=${response.email}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`,
     );
   }
   @Roles('admin')
