@@ -5,7 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import clientConfig from './config/client.config';
 import googleConfig from './config/google.config';
 import jwtConfig from './config/jwt.config';
 import refreshConfig from './config/refresh.config';
@@ -20,7 +19,6 @@ import { RefreshJwtStrategy } from './strategies/refresh-token.strategy';
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshConfig),
     ConfigModule.forFeature(googleConfig),
-    ConfigModule.forFeature(clientConfig),
   ],
   controllers: [AuthController],
   providers: [

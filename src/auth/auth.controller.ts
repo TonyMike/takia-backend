@@ -2,17 +2,15 @@ import {
   Body,
   Controller,
   Get,
-  Inject,
   Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ConfigType } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { AuthService } from './auth.service';
-import clientConfig from './config/client.config';
 import { Roles } from './decorators/role.decorator';
 import { GoogleGuard } from './guards/google.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
@@ -24,9 +22,8 @@ import { RolesGuard } from './guards/roles.guard';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    @Inject(clientConfig.KEY) private readonly clientConfiguration: ConfigType<typeof clientConfig>,
-
-    ) {}
+    private readonly configService: ConfigService,
+  ) {}
   @Post('register')
   registerUser(@Body() user: CreateUserDto) {
     return this.authService.registerUser(user);
@@ -52,11 +49,9 @@ export class AuthController {
       req.user.email,
       req.user.role,
     );
-    // res.redirect(
-    //   `http://localhost:3000/api/auth/google/callback?id=${response.id}&email=${response.email}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`,
-    // );
+    const clientURL = this.configService.get<string>('client.clientURL');
     res.redirect(
-      `${this.clientConfiguration.clientURL}/api/auth/google/callback?id=${response.id}&email=${response.email}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`,
+      `${clientURL}/api/auth/google/callback?id=${response.id}&email=${response.email}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`,
     );
   }
   @Roles('admin')
