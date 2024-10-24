@@ -8,12 +8,12 @@ import {
 } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 import { hash, verify } from 'argon2';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import refreshConfig from './config/refresh.config';
 import { AuthJwtPayload } from './types/auth-jwtPayload';
-import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +41,6 @@ export class AuthService {
       throw new BadRequestException('Phone number is already in use');
 
     const createUser = await this.userService.create(createUserDto);
-    console.log('🚀 ~ AuthService ~ registerUser ~ createUser:', createUser);
     if (!createUser)
       throw new InternalServerErrorException('Failed to create user');
     return createUser;
@@ -119,6 +118,10 @@ export class AuthService {
     if (!user) throw new UnauthorizedException('User not found');
 
     const refreshTokenMatched = await verify(user.refreshToken, refreshToken);
+    console.log(
+      '🚀 ~ AuthService ~ validateRefreshToken ~ refreshTokenMatched:',
+      refreshTokenMatched,
+    );
     if (!refreshTokenMatched)
       throw new UnauthorizedException('Invalid Refresh Token');
 
