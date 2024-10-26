@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "Product" ADD COLUMN     "likes" INTEGER DEFAULT 0,
-ALTER COLUMN "viewCount" DROP NOT NULL,
-ALTER COLUMN "viewCount" SET DEFAULT 0;
