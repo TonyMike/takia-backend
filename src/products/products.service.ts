@@ -37,8 +37,8 @@ export class ProductsService {
     });
   }
 
-  findAll(): Promise<CreateProductDto[]> {
-    return this.prismaService.product.findMany({
+  async findAll() {
+    return await this.prismaService.product.findMany({
       include: {
         User: {
           select: {
@@ -57,7 +57,7 @@ export class ProductsService {
     });
   }
 
-  async findOne(id: string): Promise<CreateProductDto> {
+  async findOne(id: string) {
     const product = await this.prismaService.product.findUnique({
       where: { id },
       include: {
