@@ -80,6 +80,17 @@ export class AuthService {
     });
   }
 
+  // async loginGoogleUser(id: string, email: string, role: Role) {
+  //   if (!id || !email || !role) return null;
+  //   const user = await this.loginUser(id, email, role);
+  //   return {
+  //     id: user.id,
+  //     email: user.email,
+  //     role: user.role,
+  //     accessToken: user.accessToken,
+  //     refreshToken: user.refreshToken,
+  //   };
+  // }
   async loginUser(id: string, email: string, role: Role) {
     const { accessToken, refreshToken } = await this.generateToken(id);
     const hashedRT = await hash(refreshToken);
@@ -118,10 +129,7 @@ export class AuthService {
     if (!user) throw new UnauthorizedException('User not found');
 
     const refreshTokenMatched = await verify(user.refreshToken, refreshToken);
-    console.log(
-      '🚀 ~ AuthService ~ validateRefreshToken ~ refreshTokenMatched:',
-      refreshTokenMatched,
-    );
+
     if (!refreshTokenMatched)
       throw new UnauthorizedException('Invalid Refresh Token');
 

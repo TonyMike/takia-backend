@@ -44,12 +44,14 @@ export class AuthController {
   @UseGuards(GoogleGuard)
   @Get('google/redirect')
   async googleRedirect(@Req() req, @Res() res: Response) {
+    const clientURL = this.configService.get<string>('client.clientURL');
+
     const response = await this.authService.loginUser(
       req.user.id,
       req.user.email,
       req.user.role,
     );
-    const clientURL = this.configService.get<string>('client.clientURL');
+
     res.redirect(
       `${clientURL}/api/auth/google/callback?id=${response.id}&email=${response.email}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`,
     );
