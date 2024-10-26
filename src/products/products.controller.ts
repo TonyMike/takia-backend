@@ -33,6 +33,15 @@ export class ProductsController {
     return this.productsService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard) // Assuming you are using JWT for authentication
+  @Post(':id/save')
+  async saveProduct(
+    @Param('id') productId: string,
+    @Body('userId') userId: string,
+  ) {
+    return this.productsService.saveProduct(productId, userId);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {

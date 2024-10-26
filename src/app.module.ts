@@ -7,6 +7,7 @@ import clientConfig from './auth/config/client.config';
 import { PrismaService } from './prisma/prisma.service';
 import { ProductsModule } from './products/products.module';
 import { UserModule } from './user/user.module';
+import { CategoryModule } from './category/category.module';
 import * as path from 'path';
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import * as path from 'path';
       envFilePath: path.resolve(process.cwd(), '.env'),
     }),
     ProductsModule,
+    CategoryModule,
   ],
 
   controllers: [AppController],

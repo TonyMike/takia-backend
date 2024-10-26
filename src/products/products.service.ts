@@ -16,18 +16,27 @@ export class ProductsService {
   ) {}
   async create(createProductDto: CreateProductDto) {
     const userExists = await this.userService.findById(createProductDto.userId);
-    console.log('🚀 ~ ProductsService ~ create ~ userExists:', userExists);
+    // console.log('🚀 ~ ProductsService ~ create ~ userExists:', userExists);
     if (!userExists)
       throw new UnauthorizedException('Please login to post product');
 
-    return await this.prismaService.product.create({
+    const category = await this.prismaService.category.findUnique({
+      where: { id: createProductDto.categoryId },
+    });
+    const subCategory = await this.prismaService.subCategory.findUnique({
+      where: { id: createProductDto.subCategoryId },
+    });
+    if (!category) throw new NotFoundException('Category not found');
+    if (!subCategory) throw new NotFoundException(' SubCategory not found');
+
+    const product = await this.prismaService.product.create({
       data: {
         title: createProductDto.title,
         description: createProductDto.description,
         negotiable: createProductDto.negotiable,
         condition: createProductDto.condition,
-        category: createProductDto.category,
-        subCategory: createProductDto.subCategory,
+        categoryId: createProductDto.categoryId, // Use categoryId
+        subCategoryId: createProductDto.subCategoryId, // Use subCategoryId
         state: createProductDto.state,
         school: createProductDto.school,
         images: createProductDto.images,
@@ -35,11 +44,15 @@ export class ProductsService {
         userId: createProductDto.userId,
       },
     });
+
+    return product;
   }
 
   async findAll() {
     return await this.prismaService.product.findMany({
       include: {
+        category: true,
+        subCategory: true,
         User: {
           select: {
             fullName: true,
@@ -61,7 +74,24 @@ export class ProductsService {
     const product = await this.prismaService.product.findUnique({
       where: { id },
       include: {
-        User: true, // Include user details if needed
+        User: {
+          select: {
+            fullName: true,
+            email: true,
+            phoneNumber: true,
+            businessName: true,
+            whatsappLink: true,
+            instagramLink: true,
+            twitterLink: true,
+            profilePicture: true,
+            createdAt: true,
+          },
+        }, // Include user details if needed
+        savedBy: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
     if (!product) throw new NotFoundException('Product not found');
@@ -79,8 +109,8 @@ export class ProductsService {
         description: updateProductDto.description,
         negotiable: updateProductDto.negotiable,
         condition: updateProductDto.condition,
-        category: updateProductDto.category,
-        subCategory: updateProductDto.subCategory,
+        category: { connect: { id: updateProductDto.categoryId } },
+        subCategory: { connect: { id: updateProductDto.subCategoryId } },
         state: updateProductDto.state,
         school: updateProductDto.school,
         images: updateProductDto.images,
@@ -96,5 +126,28 @@ export class ProductsService {
         id,
       },
     });
+  }
+
+  async saveProduct(productId: string, userId: string) {
+    // Check if the product exists
+    const product = await this.prismaService.product.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    // Create a new record in the relation table for saved products
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        savedProduct: {
+          connect: { id: productId }, // This assumes savedProduct is a relation defined in the User model
+        },
+      },
+    });
+
+    return { message: 'Product saved successfully' };
   }
 }

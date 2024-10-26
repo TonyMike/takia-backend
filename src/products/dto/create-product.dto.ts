@@ -1,15 +1,19 @@
 import {
   IsBoolean,
   IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
 export class CreateProductDto {
+  @IsNotEmpty()
   @IsString()
   title: string;
 
+  @IsNotEmpty()
   @IsString()
   description: string;
 
@@ -20,24 +24,29 @@ export class CreateProductDto {
   @IsIn(['new', 'used'])
   condition: 'new' | 'used';
 
-  @IsString()
-  category: string;
+  @IsNotEmpty()
+  @IsInt()
+  categoryId: number; // Changed to categoryId
 
-  @IsString()
-  subCategory: string;
+  @IsInt() // Changed to IsInt to match the categoryId type
+  subCategoryId: number; // Changed to subCategoryId
 
+  @IsNotEmpty()
   @IsString()
   state: string;
 
+  @IsNotEmpty()
   @IsString()
-  school: string;
+  school: string; // Made optional
 
-  @IsString()
-  images: string;
-
+  @IsNotEmpty()
+  @IsString({ each: true })
+  images: string[];
+  // Made optional
   @IsNumber()
   price: number;
 
+  @IsNotEmpty()
   @IsString()
   userId: string;
 }
