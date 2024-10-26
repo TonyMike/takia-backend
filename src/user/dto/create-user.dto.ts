@@ -8,7 +8,6 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-
   @IsOptional()
   @IsNotEmpty()
   @IsString()

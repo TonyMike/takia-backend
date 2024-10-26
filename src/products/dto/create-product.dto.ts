@@ -1,4 +1,10 @@
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -10,7 +16,8 @@ export class CreateProductDto {
   @IsBoolean()
   negotiable: boolean;
 
-  @IsString()
+  @IsNotEmpty()
+  @IsIn(['new', 'used'])
   condition: 'new' | 'used';
 
   @IsString()

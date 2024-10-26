@@ -4,7 +4,6 @@ import { Role } from '@prisma/client';
 import { Observable } from 'rxjs';
 import { ROLES_KEY } from '../decorators/role.decorator';
 
-
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
