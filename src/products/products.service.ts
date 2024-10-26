@@ -16,7 +16,6 @@ export class ProductsService {
   ) {}
   async create(createProductDto: CreateProductDto) {
     const userExists = await this.userService.findById(createProductDto.userId);
-    // console.log('🚀 ~ ProductsService ~ create ~ userExists:', userExists);
     if (!userExists)
       throw new UnauthorizedException('Please login to post product');
 
@@ -27,7 +26,7 @@ export class ProductsService {
       where: { id: createProductDto.subCategoryId },
     });
     if (!category) throw new NotFoundException('Category not found');
-    if (!subCategory) throw new NotFoundException(' SubCategory not found');
+    if (!subCategory) throw new NotFoundException('SubCategory not found');
 
     const product = await this.prismaService.product.create({
       data: {
@@ -35,19 +34,24 @@ export class ProductsService {
         description: createProductDto.description,
         negotiable: createProductDto.negotiable,
         condition: createProductDto.condition,
-        categoryId: createProductDto.categoryId, // Use categoryId
-        subCategoryId: createProductDto.subCategoryId, // Use subCategoryId
+        category: {
+          connect: { id: createProductDto.categoryId },
+        },
+        subCategory: {
+          connect: { id: createProductDto.subCategoryId },
+        },
         state: createProductDto.state,
         school: createProductDto.school,
         images: createProductDto.images,
         price: createProductDto.price,
-        userId: createProductDto.userId,
+        User: {
+          connect: { id: createProductDto.userId },
+        },
       },
     });
 
     return product;
   }
-
   async findAll() {
     return await this.prismaService.product.findMany({
       include: {

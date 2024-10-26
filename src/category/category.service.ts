@@ -55,8 +55,8 @@ export class CategoryService {
     const subCategories = await this.prismaService.subCategory.create({
       data: {
         name: createSubCategoryDto.name,
-        categoryId: createSubCategoryDto.categoryId,
         image: createSubCategoryDto.image,
+        category: { connect: { id: createSubCategoryDto.categoryId } },
       },
     });
 

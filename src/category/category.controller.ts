@@ -18,41 +18,41 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+  async create(@Body() createCategoryDto: CreateCategoryDto) {
+    return await this.categoryService.create(createCategoryDto);
   }
   @Post('/subCategory')
-  createSubCategory(@Body() createSubCategoryDto: CreateSubCategoryDto) {
+  async createSubCategory(@Body() createSubCategoryDto: CreateSubCategoryDto) {
     return this.categoryService.subCategory(createSubCategoryDto);
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  async findAll() {
+    return await this.categoryService.findAll();
   }
 
   @Get(':id')
-  findCategory(@Param('id') id: number) {
-    return this.categoryService.findCategory(id);
+  async findCategory(@Param('id') id: number) {
+    return await this.categoryService.findCategory(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoryService.update(id, updateCategoryDto);
+    return await this.categoryService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoryService.remove(+id);
+  async remove(@Param('id') id: number) {
+    return await this.categoryService.remove(+id);
   }
   @Patch('/subCategory/:id')
-  updateSubCategory(
+  async updateSubCategory(
     @Param('id') id: number,
     @Body() updateSubCategory: UpdateSubCategoryDto,
   ) {
-    return this.categoryService.updateSubCategory(id, updateSubCategory);
+    return await this.categoryService.updateSubCategory(id, updateSubCategory);
   }
 }
