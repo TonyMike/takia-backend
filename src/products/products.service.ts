@@ -16,7 +16,7 @@ export class ProductsService {
   ) {}
   async create(createProductDto: CreateProductDto) {
     const generateSlug = (title: string, id: string) => {
-      const slug = title + id;
+      const slug = title + '-' + id;
 
       return slug
         .toLowerCase() // Convert to lowercase
