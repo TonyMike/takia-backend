@@ -30,6 +30,7 @@ model User {
 model Product {
   id            String    @id @default(uuid())
   title         String
+  slug          String   @unique
   description   String
   negotiable    Boolean
   condition     Condition @default(used) // Make sure `Condition` enum is defined

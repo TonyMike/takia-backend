@@ -15,48 +15,50 @@ export class ProductsService {
     private readonly userService: UserService,
   ) {}
   async create(createProductDto: CreateProductDto) {
+    const generateSlug = (title: string, id: string) => {
+      const slug = title + id;
+
+      return slug
+        .toLowerCase() // Convert to lowercase
+        .trim() // Remove whitespace from both sides
+        .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/--+/g, '-') // Replace multiple hyphens with a single hyphen
+        .replace(/^-|-$/g, '');
+    };
     const userExists = await this.userService.findById(createProductDto.userId);
+
     if (!userExists)
       throw new UnauthorizedException('Please login to post product');
-
-    const category = await this.prismaService.category.findUnique({
-      where: { id: createProductDto.categoryId },
-    });
-    const subCategory = await this.prismaService.subCategory.findUnique({
-      where: { id: createProductDto.subCategoryId },
-    });
-    if (!category) throw new NotFoundException('Category not found');
-    if (!subCategory) throw new NotFoundException('SubCategory not found');
 
     const product = await this.prismaService.product.create({
       data: {
         title: createProductDto.title,
+        slug: '',
         description: createProductDto.description,
         negotiable: createProductDto.negotiable,
         condition: createProductDto.condition,
-        category: {
-          connect: { id: createProductDto.categoryId },
-        },
-        subCategory: {
-          connect: { id: createProductDto.subCategoryId },
-        },
+        category: { connect: { id: createProductDto.categoryId } },
+        subCategory: { connect: { id: createProductDto.subCategoryId } },
         state: createProductDto.state,
         school: createProductDto.school,
         images: createProductDto.images,
         price: createProductDto.price,
-        User: {
-          connect: { id: createProductDto.userId },
-        },
+        User: { connect: { id: createProductDto.userId } },
       },
     });
-
+    const slug = generateSlug(createProductDto.title, product.id);
+    await this.prismaService.product.update({
+      where: { id: product.id },
+      data: {
+        slug: slug,
+      },
+    });
     return product;
   }
   async findAll() {
     return await this.prismaService.product.findMany({
       include: {
-        category: true,
-        subCategory: true,
         User: {
           select: {
             fullName: true,
@@ -74,9 +76,9 @@ export class ProductsService {
     });
   }
 
-  async findOne(id: string) {
+  async findBySlug(slug: string) {
     const product = await this.prismaService.product.findUnique({
-      where: { id },
+      where: { slug },
       include: {
         User: {
           select: {
@@ -101,10 +103,17 @@ export class ProductsService {
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }
+  async findOne(id: string) {
+    const product = await this.prismaService.product.findUnique({
+      where: { id },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    return product;
+  }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     await this.findOne(id);
-    return this.prismaService.product.update({
+    return await this.prismaService.product.update({
       where: {
         id,
       },
@@ -130,6 +139,15 @@ export class ProductsService {
         id,
       },
     });
+  }
+
+  async updateViewCount(slug: string) {
+    await this.findBySlug(slug);
+    await this.prismaService.product.update({
+      where: { slug },
+      data: { viewCount: { increment: 1 } },
+    });
+    return 'Product view count updated successfully';
   }
 
   async saveProduct(productId: string, userId: string) {

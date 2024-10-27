@@ -130,7 +130,9 @@ export class CategoryService {
         id,
       },
       data: {
-        ...updateSubCategoryDto,
+        name: updateSubCategoryDto.name,
+        image: updateSubCategoryDto.image,
+        category: { connect: { id: updateSubCategoryDto.categoryId } },
       },
     });
   }

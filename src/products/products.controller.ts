@@ -17,6 +17,7 @@ import { ProductsService } from './products.service';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
@@ -28,13 +29,13 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productsService.findOne(id);
+  @Get(':slug')
+  findOne(@Param('slug') slug: string) {
+    return this.productsService.findBySlug(slug);
   }
 
   @UseGuards(JwtAuthGuard) // Assuming you are using JWT for authentication
-  @Post(':id/save')
+  @Post(':id/saveBy')
   async saveProduct(
     @Param('id') productId: string,
     @Body('userId') userId: string,
@@ -52,5 +53,10 @@ export class ProductsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
+  }
+
+  @Get(':slug/viewCount')
+  updateViewCount(@Param('slug') slug: string) {
+    return this.productsService.updateViewCount(slug);
   }
 }
