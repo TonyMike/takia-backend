@@ -5,6 +5,7 @@ import { AuthService } from 'src/auth/auth.service';
 import jwtConfig from 'src/auth/config/jwt.config';
 import refreshConfig from 'src/auth/config/refresh.config';
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
+import { CategoryService } from 'src/category/category.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { ProductsController } from './products.controller';
@@ -23,6 +24,7 @@ import { ProductsService } from './products.service';
     JwtStrategy,
     UserService,
     PrismaService,
+    CategoryService,
   ],
 })
 export class ProductsModule {}

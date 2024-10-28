@@ -83,9 +83,26 @@ export class CategoryService {
       where: {
         id,
       },
+      include: {
+        subCategories: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
     if (!cat) throw new NotFoundException('Category not found');
     return cat;
+  }
+  async findSubCategoryByid(id: number) {
+    if (!id) throw new BadRequestException('SubCategory id is required');
+    const subCat = await this.prismaService.subCategory.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!subCat) throw new NotFoundException('SubCategory not found');
+    return subCat;
   }
   async findSubCategory(name: string) {
     const subCat = await this.prismaService.subCategory.findUnique({

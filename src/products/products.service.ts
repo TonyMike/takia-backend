@@ -1,8 +1,9 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
+import { CategoryService } from 'src/category/category.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -13,23 +14,30 @@ export class ProductsService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly userService: UserService,
+    private readonly categoryService: CategoryService,
   ) {}
   async create(createProductDto: CreateProductDto) {
     const generateSlug = (title: string, id: string) => {
       const slug = title + '-' + id;
 
       return slug
-        .toLowerCase() // Convert to lowercase
+        .toLowerCase() // Convert to lowercasef
         .trim() // Remove whitespace from both sides
         .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
         .replace(/\s+/g, '-') // Replace spaces with hyphens
         .replace(/--+/g, '-') // Replace multiple hyphens with a single hyphen
         .replace(/^-|-$/g, '');
     };
-    const userExists = await this.userService.findById(createProductDto.userId);
+    const category = await this.categoryService.findCategory(
+      createProductDto.categoryId,
+    );
+    const subCategory = await this.categoryService.findSubCategoryByid(
+      createProductDto.subCategoryId,
+    );
 
-    if (!userExists)
-      throw new UnauthorizedException('Please login to post product');
+    if (subCategory.categoryId !== category.id) {
+      throw new ConflictException('SubCategory does not belong to Category');
+    }
 
     const product = await this.prismaService.product.create({
       data: {
