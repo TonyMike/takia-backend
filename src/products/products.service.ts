@@ -65,29 +65,24 @@ export class ProductsService {
     return product;
   }
   async findAll() {
-    return await this.prismaService.product.findMany({
-      include: {
-        User: {
-          select: {
-            fullName: true,
-            email: true,
-            phoneNumber: true,
-            businessName: true,
-            whatsappLink: true,
-            instagramLink: true,
-            twitterLink: true,
-            profilePicture: true,
-            createdAt: true,
-          },
-        },
-      },
-    });
+    return await this.prismaService.product.findMany();
   }
 
   async findBySlug(slug: string) {
+
     const product = await this.prismaService.product.findUnique({
       where: { slug },
       include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        subCategory: {
+          select: {
+            name: true,
+          },
+        },
         User: {
           select: {
             fullName: true,

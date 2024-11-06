@@ -4,7 +4,6 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -21,8 +20,8 @@ export class CreateProductDto {
   negotiable: boolean;
 
   @IsNotEmpty()
-  @IsIn(['new', 'used'])
-  condition: 'new' | 'used';
+  @IsIn(['new', 'used', 'refurbished'])
+  condition: 'new' | 'used' | 'refurbished';
 
   @IsNotEmpty()
   @IsInt()
